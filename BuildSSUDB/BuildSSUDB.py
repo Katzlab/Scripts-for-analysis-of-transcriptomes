@@ -70,44 +70,44 @@ def envSeqs(inputfile):
 	entrezQuery = '(environmental samples[filter] OR metagenomes[orgn])' # AND ("' + str(mindate) + ' "[MDAT] : "' + str(date.today())+ ' "[MDAT])'
 	for record in records:
 		IDlist = []
-		#try:
-		#result_handle = NCBIWWW.qblast("blastn", "nr", record.format("fasta"),  minidentity =  ".95")
-		
-		result_handle = NCBIWWW.qblast("blastn", "nr", record.format("fasta"), ncbi_gi=False, format_type="XML", entrez_query= entrezQuery ,expect = "2e-20", hitlist_size = "10000") #change evalue cut off to 2e-10
+		try:
+			#result_handle = NCBIWWW.qblast("blastn", "nr", record.format("fasta"),  minidentity =  ".95")
+			
+			result_handle = NCBIWWW.qblast("blastn", "nr", record.format("fasta"), ncbi_gi=False, format_type="XML", entrez_query= entrezQuery ,expect = "2e-20", hitlist_size = "10000") #change evalue cut off to 2e-10
 
-		#print result_handle.read()
-		blast_records = NCBIXML.parse(result_handle)
+			#print result_handle.read()
+			blast_records = NCBIXML.parse(result_handle)
 
 
-		for blast_record in blast_records:
-			#print blast_record.id
-			if blast_record.descriptions:
-				for alignment in blast_record.alignments:
-					ID  = alignment.accession
-					if ID not in IDlist:
-						IDlist.append(ID)
-						
-						IDeDict[ID] = blast_record.alignments[0].hsps[0].expect ##
-		#except:
-		#	writelog("blast error: " +  record.id)
+			for blast_record in blast_records:
+				#print blast_record.id
+				if blast_record.descriptions:
+					for alignment in blast_record.alignments:
+						ID  = alignment.accession
+						if ID not in IDlist:
+							IDlist.append(ID)
+							
+							IDeDict[ID] = float(blast_record.alignments[0].hsps[0].expect) ##
+		except:
+			writelog("blast error: " +  record.id)
 		out3.write( "**blast for " +  record.id + ':\n')
-		#try:
-		for ID in IDlist:	
-			#handle = Entrez.efetch(db="nucleotide", id=ID, rettype="fasta")
-			handle2 = Entrez.efetch(db="nucleotide", id=ID, rettype="gb")
-			
-			#record = SeqIO.read(handle,"fasta")
-			record2 = SeqIO.read(handle2,"gb")
-			
-			name = record2.description.split()[1][0:2] + '_' + record2.description.split()[2][0:3] + "_" + record2.id
-			
-			out3.write( name + ':' + str(IDeDict[ID]) + ':' + record2.description + '\n') ##
-			out2.write('>' + name + '\n')
-			out2.write(str(record2.seq) + '\n')
-			out4.write(str(record2))
+		try:
+			for ID in IDlist:	
+				#handle = Entrez.efetch(db="nucleotide", id=ID, rettype="fasta")
+				handle2 = Entrez.efetch(db="nucleotide", id=ID, rettype="gb")
+				
+				#record = SeqIO.read(handle,"fasta")
+				record2 = SeqIO.read(handle2,"gb")
+				
+				name = record2.description.split()[1][0:2] + '_' + record2.description.split()[2][0:3] + "_" + record2.id
+				
+				out3.write( name + ':' + str(IDeDict[ID]) + ':' + record2.description + '\n') ##
+				out2.write('>' + name + '\n')
+				out2.write(str(record2.seq) + '\n')
+				out4.write(str(record2))
 
-		#except:
-		#	writelog("efetch error: " +  record.id)
+		except:
+			writelog("efetch error: " +  record.id)
 	
 	
 	out2.close()
