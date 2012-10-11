@@ -80,10 +80,13 @@ def compareEval():
 				
 				if evalE == 'no hit' and evalB == 'no hit':
 					outfile.write(name + ',' + str(evalB) + ',' + str(evalE)  + ',N/A,UNDETERMINED\n')
+					break
 				elif evalE == 'no hit' and evalB != 'no hit':
 					outfile.write(name + ',' + str(evalB) + ',' + str(evalE)  + ',N/A,EUKARYOTIC\n')
+					break
 				elif evalE != 'no hit' and evalB == 'no hit':
 					outfile.write(name + ',' + str(evalB) + ',' + str(evalE)  + ',N/A,BACTERIAL\n')
+					break
 				else:
 					if evalE == 0.0:
 						evalE = 1e-310 #smallest I can get without python reverting to 0.0 and not dividing
