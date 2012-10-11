@@ -13,7 +13,9 @@ User is asked for min identity match percent and minimum sequence length.
 
 User is asked for the Rid percent.  Sequences with a greater percent identity will be purged.
 
+The latest version uses FastTree (http://www.microbesonline.org/fasttree/) which must be installed. 
 
+It also blasts each sequence against nr, excluding env. seqs. and renames the tree leaves with best hit
 
 
 #############################################################################
